@@ -1,19 +1,38 @@
-import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import Layout from './components/Layout'
-import Login from './components/Login'
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import Layout from "./components/Layout";
+import Login from "./components/Login";
 
-export const App:React.FC = () => {
-  const token = localStorage.getItem('token')
-  const navigate = useNavigate()
+export const App: React.FC = () => {
+  const navigate = useNavigate();
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("token")
+  );
+  const location = useLocation();
 
   useEffect(() => {
-    if (!token) {
-      navigate('/login')
+    const getStorageToken = () => {
+      setToken(localStorage.getItem("token"));
     }
-  },[])
+    window.addEventListener("storage", getStorageToken)
+    window.addEventListener("focus", getStorageToken);
 
-  return token ? <Layout/> : <Login/>
-}
+    return() => {
+      window.addEventListener("storage", getStorageToken)
+      window.addEventListener("focus", getStorageToken);
+    }
+  }, []);
 
-export default App
+  useEffect(() => {
+    if(token && location.pathname === "/login") {
+      navigate("/dashboard");
+    } else if (!token && location.pathname !== "/login"){
+      navigate("/login");
+    }
+  }, [token, navigate])
+
+  return token ? <Layout /> : <Login />;
+};
+
+export default App;
+

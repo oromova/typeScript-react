@@ -10,3 +10,10 @@ export interface IUsers {
   age: number,
   phone: string
 }
+
+export interface IProducts {
+  id: number,
+  title: string,
+  price: number,
+  title1: string,
+}
